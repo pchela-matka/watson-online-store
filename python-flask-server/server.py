@@ -1,41 +1,58 @@
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
 import os
 
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
 from run import WatsonEnv, MISSING_ENV_VARS
 
+# Async mode allows us to run the Slack chatbot along with the web UI.
 async_mode = "threading"
-app = Flask(__name__, static_url_path='')
 
-# Generate your own key with random an paste it into your private code.
-# os.urandom(24)
-app.config['SECRET_KEY'] = 'secret!'
+app = Flask(__name__, static_url_path='', template_folder='static')
 
+# Generate your SECRET_KEY with os.random an paste it into your secure code.
+# See: http://flask.pocoo.org/docs and go to "Quickstart" and "Sessions".
+# Look for the "How to generate good secret keys" section for more explanation.
+app.config['SECRET_KEY'] = ('\xc4\x0b\xd0\x98\x97\n\x8e\x82\xae\xe5\xa1C\x83'
+                            '\xd3\xa4\x03h\x0e0\xea\x90\x92u\xc7')
 socketio = SocketIO(app, async_mode=async_mode)
 thread = None
-
-namespace = '/test'
-
-
-@app.route('/js/<path:path>')
-def send_js(path):
-    return send_from_directory('js', path)
+namespace = '/wos'
 
 
 @app.route('/')
 def index():
+    """Render our WOS web UI using a template.
+
+    The web UI interacts with Python via Flask SocketIO.
+    And uses HTML/CSS/Javascript for formatting.
+    """
     return render_template('index.html', async_mode=async_mode)
 
 
 class WebSocketSender:
-    """ Wrap send_message with a class to use with watson.handle_message()."""
+    """ Wrap send_message with a class to use with watson.handle_message().
+
+    This is one implementation of a UI. The Slack integration is another.
+    """
 
     def __init__(self):
         pass
 
     def send_message(self, message):
-        """Function to send a message to the web-ui."""
+        """Function to send a message to the web-ui via Flask SocketIO."""
         emit('my_response', {'data': message})
 
 
@@ -44,11 +61,14 @@ sender = WebSocketSender()
 
 @socketio.on('my_event', namespace=namespace)
 def do_message(message):
+    """This is a message from the web UI user."""
 
     if not watson:
+        # Report incomplete setup.
         sender.send_message(MISSING_ENV_VARS)
 
     elif message['data']:
+        # Send message to WatsonOnlineStore and start a conversation loop.
         message = message['data']
         done = watson.handle_message(message, sender)
         while not done:
@@ -57,17 +77,18 @@ def do_message(message):
 
 @socketio.on('connect', namespace=namespace)
 def do_connect():
+    """On web UI connect, send a generic greeting via Flask SocketIO."""
     emit('my_response', {'data': 'Hello!'})
 
 
 @socketio.on('disconnect', namespace=namespace)
 def do_disconnect():
+    """On disconnect, print to stdout. Just FYI."""
     print('Client disconnected')
 
 
+# This script is intended to run from the command-line.
 if __name__ == '__main__':
-    port = os.environ.get("PORT")
-
 
     # Initialize the store with its Bluemix services for the web UI
     watson = WatsonEnv.get_watson_online_store()
@@ -79,8 +100,17 @@ if __name__ == '__main__':
         slack_wos = WatsonEnv.get_watson_online_store()
         socketio.start_background_task(slack_wos.run)
     else:
+        # Note: Failure during Slack setup does not cause a fail. The web UI
+        # is running and will report an error message.
         print('Slack integration is not started because of missing environment'
               ' variables.')
 
-    # Run the web app
+    # The Bluemix port is passed in with a PORT environment variable.
+    # This allows Bluemix health check to work. Otherwise the default
+    # port for a Flask server is 5000.
+    port = os.environ.get("PORT")
+
+    # Run the web app.
+    # Use 0.0.0.0 to allow remote connections.
+    # Use PORT environment variable (set above) to set the port.
     socketio.run(app, host='0.0.0.0', port=port)
