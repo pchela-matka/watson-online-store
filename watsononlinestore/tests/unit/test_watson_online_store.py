@@ -40,6 +40,9 @@ class WOSTestCase(unittest.TestCase):
             self.discovery_client,
             self.cloudant_store)
 
+        self.sender = watson_online_store.SlackSender(
+            self.slack_client, 'sender-channel')
+
     def test_0(self):
 
         fake_channel = "fake channel"
@@ -71,13 +74,13 @@ class WOSTestCase(unittest.TestCase):
     def test_init_customer_no_user_id(self, no_user_id):
 
         self.assertRaises(
-            AssertionError, self.wos.init_customer, no_user_id)
+            AssertionError, self.wos.init_customer, 'ignore', no_user_id)
 
     def test_init_customer_slack_fail(self):
         self.slack_client.api_call = mock.Mock(side_effect=Exception("Boom"))
         user = "testuser"
 
-        self.wos.init_customer(user)
+        self.wos.init_customer(self.sender, user)
 
         self.slack_client.api_call.assert_called_once_with(
             'users.info', user=user)
@@ -92,7 +95,7 @@ class WOSTestCase(unittest.TestCase):
         self.slack_client.api_call = mock.Mock(return_value=ret)
         user = "testuser"
 
-        self.wos.init_customer(user)
+        self.wos.init_customer(self.sender, user)
 
         self.slack_client.api_call.assert_called_once_with(
             'users.info', user=user)
@@ -108,7 +111,7 @@ class WOSTestCase(unittest.TestCase):
         })
         user = "testuser"
 
-        self.wos.init_customer(user)
+        self.wos.init_customer(self.sender, user)
 
         self.slack_client.api_call.assert_called_once_with(
             'users.info', user=user)
@@ -125,7 +128,7 @@ class WOSTestCase(unittest.TestCase):
         self.cloudant_store.find_customer = mock.Mock(return_value={})
         user = "testuser"
 
-        self.wos.init_customer(user)
+        self.wos.init_customer(self.sender, user)
 
         self.slack_client.api_call.assert_called_once_with(
             'users.info', user=user)
@@ -142,7 +145,7 @@ class WOSTestCase(unittest.TestCase):
         self.cloudant_store.find_customer = mock.Mock(return_value={})
         user = "testuser"
 
-        self.wos.init_customer(user)
+        self.wos.init_customer(self.sender, user)
 
         self.slack_client.api_call.assert_called_once_with(
             'users.info', user=user)

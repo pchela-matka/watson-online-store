@@ -43,7 +43,7 @@ def index():
 
 
 class WebSocketSender:
-    """ Wrap send_message with a class to use with watson.handle_message().
+    """Wrap send_message with a class to use with watson.handle_conversation().
 
     This is one implementation of a UI. The Slack integration is another.
     """
@@ -55,8 +55,21 @@ class WebSocketSender:
         """Function to send a message to the web-ui via Flask SocketIO."""
         emit('my_response', {'data': message})
 
+    def get_user_json(self, user_id):
+        """Get user information from user_id.
+
+        :param str user_id: user ID to look up.
+        """
+        # First impl of web-ui user is just user_id, for now.
+        return {'user': {'profile': {
+            'first_name': user_id,
+            'last_name': user_id,
+            'email': user_id,
+        }}}
+
 
 sender = WebSocketSender()
+user = 'web_user'  # TODO: Add login for web users.
 
 
 @socketio.on('my_event', namespace=namespace)
@@ -70,9 +83,7 @@ def do_message(message):
     elif message['data']:
         # Send message to WatsonOnlineStore and start a conversation loop.
         message = message['data']
-        done = watson.handle_message(message, sender)
-        while not done:
-            done = watson.handle_message(message, sender)
+        watson.handle_conversation(message, sender, user)
 
 
 @socketio.on('connect', namespace=namespace)
