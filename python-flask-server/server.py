@@ -53,7 +53,13 @@ class WebSocketSender:
 
     def send_message(self, message):
         """Function to send a message to the web-ui via Flask SocketIO."""
-        emit('my_response', {'data': message})
+        lines = message.split('\n')
+        for line in lines:
+            image = None
+            if 'output_format[png]' in line:
+                line, http_tail = line.split('http', 1)
+                image = 'http' + http_tail
+            emit('my_response', {'data': line.strip(), 'image': image})
 
     def get_user_json(self, user_id):
         """Get user information from user_id.

@@ -35,19 +35,39 @@ var watson = 'Bot';
  */
 function displayMessage(text, user) {
 
-    var chat = document.getElementById('chatBox');
-    var bubble = document.createElement('div');
-    bubble.className = 'message';  // Wrap the text first in a message class for common formatting
+    if (text && text != "") {
+        var chat = document.getElementById('chatBox');
+        var bubble = document.createElement('div');
 
-    // Set chat bubble color and position based on the user parameter
-	if (user === watson) {
-        bubble.innerHTML = "<div class='bot'>" + text + "</div>";
-    } else {
-        bubble.innerHTML = "<div class='user'>" + text + "</div>";
+        // Set chat bubble color and position based on the user parameter
+        if (user === watson) {
+            bubble.className = 'bot_message';  // Bot text formatting
+            bubble.innerHTML = "<div class='bot'>" + text + "</div>";
+        } else {
+            bubble.className = 'user_message';  // User text formatting
+            bubble.innerHTML = "<div class='user'>" + text + "</div>";
+        }
+
+        chat.appendChild(bubble);
+        chat.scrollTop = chat.scrollHeight;  // Move chat down to the last message displayed
     }
 
-    chat.appendChild(bubble);
-    chat.scrollTop = chat.scrollHeight;  // Move chat down to the last message displayed
+    return null;
+}
+
+function displayImage(url) {
+    if (url) {
+        var image = document.createElement("img");
+        image.src = url;
+        image.alt = url;
+        image.height = 50;
+        image.width = 50;
+        document.body.appendChild(image);
+
+        var chat = document.getElementById('chatBox');
+        chat.appendChild(image);
+        chat.scrollTop = chat.scrollHeight;  // Move chat down to the last message displayed
+    }
 
     return null;
 }

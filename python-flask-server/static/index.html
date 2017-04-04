@@ -31,7 +31,8 @@
 
             // Display message from the WOS bot
             socket.on('my_response', function(msg) {
-                displayMessage('WOS: ' + msg.data, 'Bot');
+                displayMessage(msg.data, 'Bot');
+                displayImage(msg.image);
             });
 
             // Send message to the WOS bot

@@ -65,19 +65,25 @@
     color: #225282;
 }
 
-.message {
+.user_message {
     margin-top: 0.5em;
     font-size: 13px;
     font-weight: bold;
     color: #fff;
 }
 
+.bot_message {
+    margin-top: 0.5em;
+    font-size: 13px;
+    font-weight: bold;
+    color: #225282;
+}
+
 .bot {
     padding: 0.5em;
     border-radius: 5px;
-    background-color: rgba(90,171,164,1.0);
     margin-left: 0.5em;
-    margin-right: 30%;
+    margin-right: 0.5em;
     -webkit-align-self: flex-start;
     align-self: flex-start;
 	-webkit-animation: fadein 2s; 
