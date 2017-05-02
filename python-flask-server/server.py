@@ -59,6 +59,9 @@ class WebSocketSender:
             if 'output_format[png]' in line:
                 line, http_tail = line.split('http', 1)
                 image = 'http' + http_tail
+
+            test_image = "https://www.amazon.com/musical-ly-wave-classic-T-Shirt-Fitted/dp/B015GG3018"
+            image = test_image
             emit('my_response', {'data': line.strip(), 'image': image})
 
     def get_user_json(self, user_id):
