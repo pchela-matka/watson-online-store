@@ -225,6 +225,23 @@ should appear:
 
 ``Watson Online Store bot is connected and running!``
 
+* Deploy using Cloud Foundry 'cf push' gives:
+
+``FAILED
+Could not find service wcsi-conversation-service to bind to watson-conversation-slots-intro``
+
+You can still use `cf push`, but realize that it is trying to bind to the services listed in the manifest.yml
+
+So, there are 3 ways you can get this to work.
+
+    * remove the services listed in the manifest.
+    * change the names of your bluemix services to match the names in the manifest.
+    * change the names in the manifest to match the names of your bluemix services.
+
+The prefered  option is number 2. Changing the manifest means you have to change it again if you have to pull from master for any reason (bug fix, new feature, ...).
+
+FYI - the 'Deploy to Bluemix' button solves this issue by creating the services on the fly (with the correct names).
+
 # License
 
 [Apache 2.0](LICENSE)
