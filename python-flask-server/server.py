@@ -76,7 +76,7 @@ class WebSocketSender:
 
 
 sender = WebSocketSender()
-user = 'web_user'  # TODO: Add login for web users.
+user = 'web user'  # TODO: Add login for web users.
 
 
 @socketio.on('my_event', namespace=namespace)
@@ -95,8 +95,11 @@ def do_message(message):
 
 @socketio.on('connect', namespace=namespace)
 def do_connect():
-    """On web UI connect, send a generic greeting via Flask SocketIO."""
-    emit('my_response', {'data': 'Hello!'})
+    """On web UI connect, do something here."""
+    # On web UI connect, send a generic greeting via Flask SocketIO.
+    # emit('my_response', {'data': 'Hello!'})
+    # The above "Hello!" or "Connected" might be nice for debugging but is not needed.
+    pass
 
 
 @socketio.on('disconnect', namespace=namespace)
