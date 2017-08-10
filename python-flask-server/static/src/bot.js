@@ -61,8 +61,6 @@ function displayImage(url) {
         var image = document.createElement("img");
         image.src = url;
         image.alt = url;
-        image.height = 50;
-        image.width = 50;
         image.className = 'thumbnail';  // Image formatting
 
         document.body.appendChild(image);

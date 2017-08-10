@@ -77,6 +77,8 @@
     font-size: 13px;
     font-weight: bold;
     color: #225282;
+    height: 150px;
+    background-size: contain;
 }
 
 .bot {
@@ -112,7 +114,8 @@
     border: 1px solid #ddd; /* Gray border */
     border-radius: 4px;  /* Rounded border */
     padding: 5px; /* Some padding */
-    width: 150px; /* Set a small width */
+    height: 300px;
+    max-width: 75px;
 }
 
 @keyframes fadein {
