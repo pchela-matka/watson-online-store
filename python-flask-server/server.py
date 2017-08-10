@@ -97,8 +97,8 @@ def do_message(message):
 def do_connect():
     """On web UI connect, do something here."""
     # On web UI connect, send a generic greeting via Flask SocketIO.
+    # Uncomment for debugging. Not great for normal use case.
     # emit('my_response', {'data': 'Hello!'})
-    # The above "Hello!" or "Connected" might be nice for debugging but is not needed.
     pass
 
 
